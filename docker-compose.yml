@@ -5,7 +5,7 @@ services:
     build: apps/.
     image: zeffry/simple-apps
     restart: always
-    environtment:
+    environment:
      - DB_NAME=training 
      - DB_HOST=localhost 
      - DB_USER=peserta
