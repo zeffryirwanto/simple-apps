@@ -1,0 +1,43 @@
+pipeline {
+    agent {label 'devops1-zeffry'}
+    
+
+    stages {
+        stage('Checkout SCM') {
+            steps {
+                git branch: 'main', url: 'https://github.com/zeffryirwanto/simple-apps.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh '''cd apps
+                npm install'''
+            }
+        }
+        stage('Testing') {
+            steps {
+                sh '''cd apps
+                npm test
+                npm run test:coverage'''
+            }
+        }
+        stage('Code Review') {
+            steps {
+                sh '''cd apps
+                sonar-scanner \
+                -Dsonar.projectKey=simple-apps \
+                -Dsonar.sources=. \
+                -Dsonar.host.url=http://172.23.13.203:9000 \
+                -Dsonar.login=sqp_ede0ff80af46fe00fb5cc2f1b6b27a8d77034b1c'''
+            }
+        }
+        stage('Deploy compose') {
+            steps {
+                sh '''
+                docker compose build
+                docker compose up -d
+                '''
+            }
+        }
+    }
+}
